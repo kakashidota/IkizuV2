@@ -6,121 +6,241 @@
 //  Copyright © 2018 Robin kamo. All rights reserved.
 //
 
-import UIKit
-import QuartzCore
+
 import SceneKit
+import SpriteKit
+
+enum GameState{
+    case loading, playing
+}
 
 class GameViewController: UIViewController {
+    //Scene
+    var gameView:GameView { return view as! GameView}
+    var mainScene:SCNScene!
+    
 
+    //general
+    var gameState:GameState = .loading
+    
+    //nodes
+    private var player:Player?
+    private var cameraStick:SCNNode!
+    private var cameraXHolder:SCNNode!
+    private var cameraYHolder:SCNNode!
+    
+    //movement
+    private var controllerStoredDirection = float2(0.0)
+    private var padTouch:UITouch?
+    private var cameraTouch:UITouch?
+    
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        // create a new scene
-        let scene = SCNScene(named: "art.scnassets/ship.scn")!
-        
-        // create and add a camera to the scene
-        let cameraNode = SCNNode()
-        cameraNode.camera = SCNCamera()
-        scene.rootNode.addChildNode(cameraNode)
-        
-        // place the camera
-        cameraNode.position = SCNVector3(x: 0, y: 0, z: 15)
-        
-        // create and add a light to the scene
-        let lightNode = SCNNode()
-        lightNode.light = SCNLight()
-        lightNode.light!.type = .omni
-        lightNode.position = SCNVector3(x: 0, y: 10, z: 10)
-        scene.rootNode.addChildNode(lightNode)
-        
-        // create and add an ambient light to the scene
-        let ambientLightNode = SCNNode()
-        ambientLightNode.light = SCNLight()
-        ambientLightNode.light!.type = .ambient
-        ambientLightNode.light!.color = UIColor.darkGray
-        scene.rootNode.addChildNode(ambientLightNode)
-        
-        // retrieve the ship node
-        let ship = scene.rootNode.childNode(withName: "ship", recursively: true)!
-        
-        // animate the 3d object
-        ship.runAction(SCNAction.repeatForever(SCNAction.rotateBy(x: 0, y: 2, z: 0, duration: 1)))
-        
-        // retrieve the SCNView
-        let scnView = self.view as! SCNView
-        
-        // set the scene to the view
-        scnView.scene = scene
-        
-        // allows the user to manipulate the camera
-        scnView.allowsCameraControl = true
-        
-        // show statistics such as fps and timing information
-        scnView.showsStatistics = true
-        
-        // configure the view
-        scnView.backgroundColor = UIColor.black
-        
-        // add a tap gesture recognizer
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
-        scnView.addGestureRecognizer(tapGesture)
+        setupScene()
+        setupPlayer()
+        setupCamera()
+        gameState = .playing
     }
     
-    @objc
-    func handleTap(_ gestureRecognize: UIGestureRecognizer) {
-        // retrieve the SCNView
-        let scnView = self.view as! SCNView
+    
+    //MARK:- SCENE
+    func setupScene(){
+      //  gameView.allowsCameraControl = true
+        gameView.antialiasingMode = .multisampling4X
+        gameView.delegate = self
+        mainScene = SCNScene(named: "art.scnassets/Scenes/Stage1.scn")
+        gameView.scene = mainScene
+        gameView.isPlaying = true
+    }
+    
+    //MARK:- WALLS
+    
+    
+    
+    //MARK:- CAMERA
+    private func setupCamera(){
+        cameraStick = mainScene.rootNode.childNode(withName: "CameraStick", recursively: true)!
         
-        // check what nodes are tapped
-        let p = gestureRecognize.location(in: scnView)
-        let hitResults = scnView.hitTest(p, options: [:])
-        // check that we clicked on at least one object
-        if hitResults.count > 0 {
-            // retrieved the first clicked object
-            let result = hitResults[0]
+        cameraXHolder = mainScene.rootNode.childNode(withName: "xHolder", recursively: true)!
+        
+        cameraYHolder = mainScene.rootNode.childNode(withName: "yHolder", recursively: true)!
+        
+        
+    }
+    
+    private func panCamera (_ direction:float2){
+        var directionToPan = direction
+        directionToPan *= float2(1.0, -1.0)
+        
+        let panReducer = Float(0.005)
+        
+        let currX = cameraXHolder.rotation
+        let xRotationValue = currX.w - directionToPan.x * panReducer
+        
+        let currY = cameraYHolder.rotation
+        var yRotationValue = currY.w + directionToPan.y * panReducer
+        
+        if yRotationValue < -0.94 { yRotationValue = -0.94 }
+        if yRotationValue > 0.66 { yRotationValue = 0.66 }
+        
+        cameraXHolder.rotation = SCNVector4Make(0, 1, 0, xRotationValue)
+        cameraYHolder.rotation = SCNVector4Make(1, 0, 0, yRotationValue)
+    }
+    
+    //MARK:- PLAYER
+    private func setupPlayer(){
+        
+        player = Player()
+        player!.scale = SCNVector3Make(0.0026, 0.0026, 0.0026)
+        player!.position = SCNVector3Make(0.0, 0.0, 0.0)
+        player!.rotation = SCNVector4Make(0, 1, 0, Float.pi)
+        
+        mainScene.rootNode.addChildNode(player!)
+        
+    }
+    
+    //MARK:- TOUCHES + MOVEMENT
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        for touch in touches {
             
-            // get its material
-            let material = result.node.geometry!.firstMaterial!
-            
-            // highlight it
-            SCNTransaction.begin()
-            SCNTransaction.animationDuration = 0.5
-            
-            // on completion - unhighlight
-            SCNTransaction.completionBlock = {
-                SCNTransaction.begin()
-                SCNTransaction.animationDuration = 0.5
+            if gameView.virtualDPadBounds().contains(touch.location(in: gameView)) {
                 
-                material.emission.contents = UIColor.black
+                if padTouch == nil {
+                    
+                    padTouch = touch
+                    controllerStoredDirection = float2(0.0)
+                }
                 
-                SCNTransaction.commit()
+            } else if gameView.virtualAttackButtonBounds().contains(touch.location(in: gameView)) {
+                print("mainAttack")
+                mainAttack()
+                
+                
+            } else if cameraTouch == nil {
+                
+                cameraTouch = touches.first
             }
             
-            material.emission.contents = UIColor.red
+            if padTouch != nil { break }
+        }
+        }
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        
+        
+        if let touch = padTouch {
             
-            SCNTransaction.commit()
+            let displacement = float2(touch.location(in: view)) - float2(touch.previousLocation(in: view))
+            
+            let vMix = mix(controllerStoredDirection, displacement, t: 0.1)
+            let vClamp = clamp(vMix, min: -1.0, max: 1.0)
+            
+            controllerStoredDirection = vClamp
+            
+        } else if let touch = cameraTouch {
+            
+            let displacement = float2(touch.location(in: view)) - float2(touch.previousLocation(in: view))
+            
+            panCamera(displacement)
         }
     }
     
-    override var shouldAutorotate: Bool {
-        return true
-    }
     
-    override var prefersStatusBarHidden: Bool {
-        return true
-    }
-    
-    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        if UIDevice.current.userInterfaceIdiom == .phone {
-            return .allButUpsideDown
-        } else {
-            return .all
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        for touch in touches {
+            let location = touch.location(in: gameView)
+            if gameView.virtualAttackButtonBounds().contains(location) {
+                print("kuK")
+            } else {
+                padTouch = nil
+                controllerStoredDirection = float2(0.0)
+                cameraTouch = nil
+            }
         }
+        
     }
     
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Release any cached data, images, etc that aren't in use.
+    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        padTouch = nil
+        cameraTouch = nil
+
+        controllerStoredDirection = float2(0.0)
+    }
+    
+    //MARK:- GAME LOOP FUNCTIONS
+    func characterDirection() -> float3{
+        var direction = float3(x: controllerStoredDirection.x, y: 0.0, z: controllerStoredDirection.y)
+        
+        if let pov = gameView.pointOfView{
+            let p1 = pov.presentation.convertPosition(SCNVector3(direction), to: nil)
+            let p0 = pov.presentation.convertPosition(SCNVector3Zero, to: nil)
+            
+            direction = float3(x: Float(p1.x-p0.x), y: 0.0, z: Float(p1.z-p0.z))
+            
+            if direction.x != 0.0 || direction.z != 0.0 {
+                direction = normalize(direction)
+            }
+        }
+        return direction
+    }
+    
+    func updateFollowers(){
+        cameraStick.position = SCNVector3Make(player!.position.x, 0.0, player!.position.z)
+    }
+    
+    
+    //MARK:- ENEMIES
+    //TODO
+    func mainAttack(){
+        let geometry = SCNBox(width: 1, height: 1, length: 1, chamferRadius: 0.0)
+        let squareNode = SCNNode()
+        squareNode.geometry = geometry
+        var direction = characterDirection()
+        var dX = player!.aim.position.x - player!.position.x
+        var dY = player!.aim.position.y - player!.position.y
+        var dZ = player!.aim.position.z - player!.position.z
+        
+        let magnitude = sqrt((dX * dX) + (dY * dY) + (dZ * dZ))
+        dX /= magnitude
+        dY /= magnitude
+        dZ /= magnitude
+        
+        squareNode.position = SCNVector3(x: dX * direction.x, y: dY * direction.y, z: dZ * direction.z)
+//        player!.position.z + 10
+        squareNode.physicsBody?.isAffectedByGravity = true
+        mainScene.rootNode.addChildNode(squareNode)
+        
+        print("nice la")
+    }
+
+ 
+    
+    
+
+
+}
+
+extension GameViewController:SCNSceneRendererDelegate{
+    
+    func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
+        if gameState != .playing {return}
+        
+        let scene = gameView.scene!
+        let direction = characterDirection()
+        player?.walkInDirection(direction, time: time, scene: scene)
+        
+        updateFollowers()
     }
 
 }
+
+
+
+
+
+
+
+
+
+
