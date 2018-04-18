@@ -18,7 +18,8 @@ class GameViewController: UIViewController {
     //Scene
     var gameView:GameView { return view as! GameView}
     var mainScene:SCNScene!
-    
+    var currentBallNode: SCNNode?
+
 
     //general
     var gameState:GameState = .loading
@@ -42,6 +43,11 @@ class GameViewController: UIViewController {
         setupPlayer()
         setupCamera()
         gameState = .playing
+        
+        mainScene.fogColor = UIColor(red: 0.1, green: 0.1, blue: 0.1, alpha: 1)
+        mainScene.fogStartDistance = 10
+        mainScene.fogEndDistance = 100
+        mainScene.fogDensityExponent = 0.1
     }
     
     
@@ -53,6 +59,8 @@ class GameViewController: UIViewController {
         mainScene = SCNScene(named: "art.scnassets/Scenes/Stage1.scn")
         gameView.scene = mainScene
         gameView.isPlaying = true
+    
+        
     }
     
     //MARK:- WALLS
@@ -66,7 +74,6 @@ class GameViewController: UIViewController {
         cameraXHolder = mainScene.rootNode.childNode(withName: "xHolder", recursively: true)!
         
         cameraYHolder = mainScene.rootNode.childNode(withName: "yHolder", recursively: true)!
-        
         
     }
     
@@ -151,7 +158,7 @@ class GameViewController: UIViewController {
         for touch in touches {
             let location = touch.location(in: gameView)
             if gameView.virtualAttackButtonBounds().contains(location) {
-                print("kuK")
+                print("bror")
             } else {
                 padTouch = nil
                 controllerStoredDirection = float2(0.0)
@@ -180,6 +187,7 @@ class GameViewController: UIViewController {
             
             if direction.x != 0.0 || direction.z != 0.0 {
                 direction = normalize(direction)
+                
             }
         }
         return direction
@@ -193,30 +201,44 @@ class GameViewController: UIViewController {
     //MARK:- ENEMIES
     //TODO
     func mainAttack(){
-        let geometry = SCNBox(width: 1, height: 1, length: 1, chamferRadius: 0.0)
-        let squareNode = SCNNode()
-        squareNode.geometry = geometry
-        var direction = characterDirection()
-        var dX = player!.aim.position.x - player!.position.x
-        var dY = player!.aim.position.y - player!.position.y
-        var dZ = player!.aim.position.z - player!.position.z
+        let ballScene = SCNScene(named: "art.scnassets/Scenes/Hero/Ball.scn")!
+
         
-        let magnitude = sqrt((dX * dX) + (dY * dY) + (dZ * dZ))
-        dX /= magnitude
-        dY /= magnitude
-        dZ /= magnitude
+        let ballNode = ballScene.rootNode.childNode(withName: "sphere", recursively: true)!
+        ballNode.name = "ball"
+        let ballPhysicsBody = SCNPhysicsBody(
+            type: .dynamic,
+            shape: SCNPhysicsShape(geometry: SCNSphere(radius: 0.35))
+        )
+        ballPhysicsBody.mass = 3
+        ballPhysicsBody.friction = 2
+        ballPhysicsBody.contactTestBitMask = 1
+        ballNode.physicsBody = ballPhysicsBody
+        ballNode.position = SCNVector3(x: player!.position.x, y: player!.position.y, z: player!.position.z)
         
-        squareNode.position = SCNVector3(x: dX * direction.x, y: dY * direction.y, z: dZ * direction.z)
-//        player!.position.z + 10
-        squareNode.physicsBody?.isAffectedByGravity = true
-        mainScene.rootNode.addChildNode(squareNode)
+        currentBallNode = ballNode
+        ballNode.physicsBody?.applyForce(SCNVector3(characterDirection() * 50), asImpulse: true)
+//        ballNode.physicsBody?.applyForce(SCNVector3(characterDirection()), at: SCNVector3(x: 0.5 , y: 0.5, z: 50), asImpulse: true)
+        
+        
+        mainScene.rootNode.addChildNode(ballNode)
+        
+        
         
         print("nice la")
     }
 
  
     
-    
+    //        var dX = player!.aim.position.x - player!.position.x
+    //        var dY = player!.aim.position.y - player!.position.y
+    //        var dZ = player!.aim.position.z - player!.position.z
+    //
+    //        let magnitude = sqrt((dX * dX) + (dY * dY) + (dZ * dZ))
+    //        dX /= magnitude
+    //        dY /= magnitude
+    //        dZ /= magnitude
+    //
 
 
 }

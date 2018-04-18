@@ -148,7 +148,6 @@ class Player:SCNNode{
             directionAngel = SCNFloat(atan2f(direction.x, direction.z))
             
             
-            
             isWalking = true
             
         } else {
@@ -157,7 +156,8 @@ class Player:SCNNode{
         
         
     }
-
+    
+    
 }
 
 
