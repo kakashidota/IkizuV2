@@ -38,7 +38,7 @@ class GameView : SCNView {
     }
     
     //MARK:- overlay functions
-    private func setup2DOverlay() {
+     func setup2DOverlay() {
         
         let w = bounds.size.width
         let h = bounds.size.height
@@ -57,13 +57,13 @@ class GameView : SCNView {
         skScene.isUserInteractionEnabled = false
     }
     
-    private func layout2DOverlay() {
+     func layout2DOverlay() {
         
         overlayNode.position = CGPoint(x: 0.0, y: bounds.size.height)
     }
     
     //MARK:- D-Pad
-    private func setupDpad(with scene:SKScene) {
+     func setupDpad(with scene:SKScene) {
         
         dpadSprite = SKSpriteNode(imageNamed: "art.scnassets/Assets/dpad.png")
         dpadSprite.position = CGPoint(x: 10.0, y: 10.0)
@@ -86,7 +86,7 @@ class GameView : SCNView {
     }
     
     //MARK:- attack button
-    private func setupAttackButton(with scene:SKScene) {
+     func setupAttackButton(with scene:SKScene) {
         
         attackButtonSprite = SKSpriteNode(imageNamed: "art.scnassets/Assets/attack1.png")
         attackButtonSprite.position = CGPoint(x: bounds.size.height-110.0, y: 50)
@@ -108,7 +108,7 @@ class GameView : SCNView {
     }
     
     //MARK:- HP bar
-    private func setupHpBar(with scene:SKScene) {
+     func setupHpBar(with scene:SKScene) {
         
         hpBar = SKSpriteNode(color: UIColor.green, size: CGSize(width: hpBarMaxWidth, height: 20))
         hpBar.anchorPoint = CGPoint(x: 0.0, y: 0.0)

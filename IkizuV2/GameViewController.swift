@@ -25,15 +25,17 @@ class GameViewController: UIViewController {
     var gameState:GameState = .loading
     
     //nodes
-    private var player:Player?
-    private var cameraStick:SCNNode!
-    private var cameraXHolder:SCNNode!
-    private var cameraYHolder:SCNNode!
+     var player:Player?
+     var cameraStick:SCNNode!
+     var cameraXHolder:SCNNode!
+     var cameraYHolder:SCNNode!
+    //player2Nodes
+    var bro:Player?
     
     //movement
-    private var controllerStoredDirection = float2(0.0)
-    private var padTouch:UITouch?
-    private var cameraTouch:UITouch?
+     var controllerStoredDirection = float2(0.0)
+     var padTouch:UITouch?
+     var cameraTouch:UITouch?
     
     
     
@@ -41,6 +43,7 @@ class GameViewController: UIViewController {
         super.viewDidLoad()
         setupScene()
         setupPlayer()
+        setupBro()
         setupCamera()
         gameState = .playing
         
@@ -68,7 +71,7 @@ class GameViewController: UIViewController {
     
     
     //MARK:- CAMERA
-    private func setupCamera(){
+     func setupCamera(){
         cameraStick = mainScene.rootNode.childNode(withName: "CameraStick", recursively: true)!
         
         cameraXHolder = mainScene.rootNode.childNode(withName: "xHolder", recursively: true)!
@@ -77,7 +80,7 @@ class GameViewController: UIViewController {
         
     }
     
-    private func panCamera (_ direction:float2){
+     func panCamera (_ direction:float2){
         var directionToPan = direction
         directionToPan *= float2(1.0, -1.0)
         
@@ -97,15 +100,25 @@ class GameViewController: UIViewController {
     }
     
     //MARK:- PLAYER
-    private func setupPlayer(){
+     func setupPlayer(){
         
         player = Player()
-        player!.scale = SCNVector3Make(0.0026, 0.0026, 0.0026)
+        player!.scale = SCNVector3Make(0.0046, 0.0046, 0.0046)
         player!.position = SCNVector3Make(0.0, 0.0, 0.0)
         player!.rotation = SCNVector4Make(0, 1, 0, Float.pi)
         
         mainScene.rootNode.addChildNode(player!)
         
+    }
+    
+    //MARK:- BRO
+    func setupBro(){
+        bro = Player()
+        bro!.scale = SCNVector3Make(0.0046, 0.0046, 0.0046)
+        bro!.position = SCNVector3Make(5, 0, 5)
+        bro!.rotation = SCNVector4Make(0, 1, 0, Float.pi)
+        
+        mainScene.rootNode.addChildNode(bro!)
     }
     
     //MARK:- TOUCHES + MOVEMENT
@@ -123,6 +136,7 @@ class GameViewController: UIViewController {
             } else if gameView.virtualAttackButtonBounds().contains(touch.location(in: gameView)) {
                 print("mainAttack")
                 mainAttack()
+                cameraAim()
                 
                 
             } else if cameraTouch == nil {
@@ -198,12 +212,17 @@ class GameViewController: UIViewController {
     }
     
     
-    //MARK:- ENEMIES
-    //TODO
+    //MARK:- Combat
+    func cameraAim(){
+        
+    }
+    
+    
+    
+    
+    //TODO 3d asset
     func mainAttack(){
         let ballScene = SCNScene(named: "art.scnassets/Scenes/Hero/Ball.scn")!
-
-        
         let ballNode = ballScene.rootNode.childNode(withName: "sphere", recursively: true)!
         ballNode.name = "ball"
         let ballPhysicsBody = SCNPhysicsBody(
@@ -218,28 +237,11 @@ class GameViewController: UIViewController {
         
         currentBallNode = ballNode
         ballNode.physicsBody?.applyForce(SCNVector3(characterDirection() * 50), asImpulse: true)
-//        ballNode.physicsBody?.applyForce(SCNVector3(characterDirection()), at: SCNVector3(x: 0.5 , y: 0.5, z: 50), asImpulse: true)
-        
         
         mainScene.rootNode.addChildNode(ballNode)
         
-        
-        
         print("nice la")
     }
-
- 
-    
-    //        var dX = player!.aim.position.x - player!.position.x
-    //        var dY = player!.aim.position.y - player!.position.y
-    //        var dZ = player!.aim.position.z - player!.position.z
-    //
-    //        let magnitude = sqrt((dX * dX) + (dY * dY) + (dZ * dZ))
-    //        dX /= magnitude
-    //        dY /= magnitude
-    //        dZ /= magnitude
-    //
-
 
 }
 
