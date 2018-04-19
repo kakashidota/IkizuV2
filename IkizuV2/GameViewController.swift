@@ -9,6 +9,7 @@
 
 import SceneKit
 import SpriteKit
+import Firebase
 
 enum GameState{
     case loading, playing
@@ -37,10 +38,13 @@ class GameViewController: UIViewController {
      var padTouch:UITouch?
      var cameraTouch:UITouch?
     
-    
+    //Firebase
+    var myDatabase : DatabaseReference?
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        myDatabase = Database.database().reference()
+        myDatabase?.child("yo").setValue("hej")
         setupScene()
         setupPlayer()
         setupBro()
