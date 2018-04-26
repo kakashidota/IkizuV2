@@ -8,6 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		0FA076E520892A7A002925B8 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0FA076E420892A79002925B8 /* GoogleService-Info.plist */; };
+		0FA076E72090A9E1002925B8 /* PlayerClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FA076E62090A9E1002925B8 /* PlayerClass.swift */; };
+		0FA076E92090B795002925B8 /* iOSDevCenters+GIF.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FA076E82090B795002925B8 /* iOSDevCenters+GIF.swift */; };
+		0FA076EB2090B7D9002925B8 /* WelcomePage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FA076EA2090B7D9002925B8 /* WelcomePage.swift */; };
+		0FA076ED20926D8A002925B8 /* MultiplayerControlelr.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FA076EC20926D8A002925B8 /* MultiplayerControlelr.swift */; };
 		0FF4F0FE207EAC0300C4EFCF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FF4F0FD207EAC0300C4EFCF /* AppDelegate.swift */; };
 		0FF4F100207EAC0300C4EFCF /* art.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = 0FF4F0FF207EAC0300C4EFCF /* art.scnassets */; };
 		0FF4F102207EAC0300C4EFCF /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FF4F101207EAC0300C4EFCF /* GameViewController.swift */; };
@@ -22,6 +26,10 @@
 
 /* Begin PBXFileReference section */
 		0FA076E420892A79002925B8 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = SOURCE_ROOT; };
+		0FA076E62090A9E1002925B8 /* PlayerClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerClass.swift; sourceTree = "<group>"; };
+		0FA076E82090B795002925B8 /* iOSDevCenters+GIF.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "iOSDevCenters+GIF.swift"; sourceTree = "<group>"; };
+		0FA076EA2090B7D9002925B8 /* WelcomePage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomePage.swift; sourceTree = "<group>"; };
+		0FA076EC20926D8A002925B8 /* MultiplayerControlelr.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiplayerControlelr.swift; sourceTree = "<group>"; };
 		0FF4F0FA207EAC0300C4EFCF /* IkizuV2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IkizuV2.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0FF4F0FD207EAC0300C4EFCF /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0FF4F0FF207EAC0300C4EFCF /* art.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = art.scnassets; sourceTree = "<group>"; };
@@ -50,6 +58,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0FA076EE20926D8F002925B8 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				0FF4F101207EAC0300C4EFCF /* GameViewController.swift */,
+				0FA076EC20926D8A002925B8 /* MultiplayerControlelr.swift */,
+				0FA076EA2090B7D9002925B8 /* WelcomePage.swift */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
 		0FF4F0F1207EAC0300C4EFCF = {
 			isa = PBXGroup;
 			children = (
@@ -71,10 +89,10 @@
 		0FF4F0FC207EAC0300C4EFCF /* IkizuV2 */ = {
 			isa = PBXGroup;
 			children = (
+				0FA076EE20926D8F002925B8 /* Controllers */,
 				0FF4F113207EAD0D00C4EFCF /* Nodes */,
 				0FF4F112207EACF900C4EFCF /* Helpers */,
 				0FF4F0FF207EAC0300C4EFCF /* art.scnassets */,
-				0FF4F101207EAC0300C4EFCF /* GameViewController.swift */,
 				0FF4F114207EAD2600C4EFCF /* GameView.swift */,
 				0FF4F103207EAC0300C4EFCF /* Main.storyboard */,
 				0FF4F106207EAC0500C4EFCF /* Assets.xcassets */,
@@ -90,6 +108,8 @@
 			isa = PBXGroup;
 			children = (
 				0FF4F118207FFC8700C4EFCF /* Extensions.swift */,
+				0FA076E82090B795002925B8 /* iOSDevCenters+GIF.swift */,
+				0FA076E62090A9E1002925B8 /* PlayerClass.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -131,6 +151,7 @@
 				0FF4F0F7207EAC0300C4EFCF /* Frameworks */,
 				0FF4F0F8207EAC0300C4EFCF /* Resources */,
 				76070253C41D6B42D7B90650 /* [CP] Embed Pods Frameworks */,
+				FEEDDFA1098610BFB8264CBA /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -197,6 +218,7 @@
 			);
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-IkizuV2/Pods-IkizuV2-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/GTMOAuth2/GTMOAuth2.framework",
 				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
 				"${BUILT_PRODUCTS_DIR}/GoogleToolboxForMac/GoogleToolboxForMac.framework",
 				"${BUILT_PRODUCTS_DIR}/leveldb-library/leveldb.framework",
@@ -204,6 +226,7 @@
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMOAuth2.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleToolboxForMac.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/leveldb.framework",
@@ -232,6 +255,24 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		FEEDDFA1098610BFB8264CBA /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-IkizuV2/Pods-IkizuV2-resources.sh",
+				"${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleSignIn.bundle",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-IkizuV2/Pods-IkizuV2-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -242,6 +283,10 @@
 				0FF4F119207FFC8700C4EFCF /* Extensions.swift in Sources */,
 				0FF4F117207FEEE400C4EFCF /* Player.swift in Sources */,
 				0FF4F102207EAC0300C4EFCF /* GameViewController.swift in Sources */,
+				0FA076E92090B795002925B8 /* iOSDevCenters+GIF.swift in Sources */,
+				0FA076E72090A9E1002925B8 /* PlayerClass.swift in Sources */,
+				0FA076EB2090B7D9002925B8 /* WelcomePage.swift in Sources */,
+				0FA076ED20926D8A002925B8 /* MultiplayerControlelr.swift in Sources */,
 				0FF4F115207EAD2600C4EFCF /* GameView.swift in Sources */,
 				0FF4F0FE207EAC0300C4EFCF /* AppDelegate.swift in Sources */,
 			);

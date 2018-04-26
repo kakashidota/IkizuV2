@@ -20,6 +20,7 @@ class GameViewController: UIViewController {
     var gameView:GameView { return view as! GameView}
     var mainScene:SCNScene!
     var currentBallNode: SCNNode?
+    
 
 
     //general
@@ -32,6 +33,9 @@ class GameViewController: UIViewController {
      var cameraYHolder:SCNNode!
     //player2Nodes
     var bro:Player?
+    var playerList:[Player?] = []
+    var broPos = PlayerClass()
+    var listOfPlayers : [PlayerClass] = []
     
     //movement
      var controllerStoredDirection = float2(0.0)
@@ -52,8 +56,8 @@ class GameViewController: UIViewController {
         gameState = .playing
         
         mainScene.fogColor = UIColor(red: 0.1, green: 0.1, blue: 0.1, alpha: 1)
-        mainScene.fogStartDistance = 10
-        mainScene.fogEndDistance = 100
+        mainScene.fogStartDistance = 100
+        mainScene.fogEndDistance = 2000
         mainScene.fogDensityExponent = 0.1
     }
     
@@ -121,10 +125,16 @@ class GameViewController: UIViewController {
         bro!.scale = SCNVector3Make(0.0046, 0.0046, 0.0046)
         bro!.position = SCNVector3Make(5, 0, 5)
         bro!.rotation = SCNVector4Make(0, 1, 0, Float.pi)
+        myDatabase = Database.database().reference()
+        playerList.append(bro!)
+        
+        
+       // myDatabase?.child("Player1").setValue(playerList)
         
         mainScene.rootNode.addChildNode(bro!)
     }
     
+
     //MARK:- TOUCHES + MOVEMENT
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         for touch in touches {
@@ -139,8 +149,9 @@ class GameViewController: UIViewController {
                 
             } else if gameView.virtualAttackButtonBounds().contains(touch.location(in: gameView)) {
                 print("mainAttack")
+                handleBroMovment()
                 mainAttack()
-                cameraAim()
+
                 
                 
             } else if cameraTouch == nil {
@@ -161,14 +172,30 @@ class GameViewController: UIViewController {
             let vMix = mix(controllerStoredDirection, displacement, t: 0.1)
             let vClamp = clamp(vMix, min: -1.0, max: 1.0)
             
-            controllerStoredDirection = vClamp
             
+            controllerStoredDirection = vClamp
+            listOfPlayers.append(broPos)
+            broPos.positionX = player!.position.x
+            broPos.positionY = player!.position.y
+            broPos.positionZ = player!.position.z
+
+            
+            broPos.saveToFirebase()
+        
         } else if let touch = cameraTouch {
             
             let displacement = float2(touch.location(in: view)) - float2(touch.previousLocation(in: view))
             
             panCamera(displacement)
         }
+    }
+    
+    func handleBroMovment(){
+        
+        myDatabase?.child("bror").observe(.childChanged, with: { (snapshot) in
+            print(snapshot)
+        })
+        
     }
     
     
@@ -217,11 +244,30 @@ class GameViewController: UIViewController {
     
     
     //MARK:- Combat
-    func cameraAim(){
+    
+    
+    func edoTensei() {
+        
+        let wallScene = SCNScene(named: "art.scnassets/Scenes/Items/Wall.scn")!
+        let wallNode = wallScene.rootNode.childNode(withName: "wall", recursively: true)!
+        wallNode.name = "wall"
+        let wallPhyscicsBody = SCNPhysicsBody(
+            type: .dynamic,
+            shape: SCNPhysicsShape(geometry: SCNBox(width: 1, height: 1, length: 1, chamferRadius: 0.1))
+            )
+        wallPhyscicsBody.contactTestBitMask = 1
+        wallPhyscicsBody.friction = 2
+        wallPhyscicsBody.mass = 3
+        wallNode.physicsBody = wallPhyscicsBody
+        wallNode.position = SCNVector3(x: 2, y: 0, z: 3)
+    
+    
+        
+        
+        mainScene.rootNode.addChildNode(wallNode)
+        
         
     }
-    
-    
     
     
     //TODO 3d asset
@@ -245,6 +291,8 @@ class GameViewController: UIViewController {
         mainScene.rootNode.addChildNode(ballNode)
         
         print("nice la")
+        //edoTensei()
+        
     }
 
 }

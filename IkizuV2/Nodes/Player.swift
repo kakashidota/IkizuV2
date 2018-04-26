@@ -17,18 +17,18 @@ enum PlayerAnimationType {
 class Player:SCNNode{
     
     //nodes
-    private var deaHolderNode = SCNNode()
-    private var characterNode: SCNNode!
+     var deaHolderNode = SCNNode()
+     var characterNode: SCNNode!
      var aim: SCNNode!
  
     //animations
-    private var walkAnimation = CAAnimation()
-    private var attack1Animation = CAAnimation()
-    private var deadAnimation = CAAnimation()
+     var walkAnimation = CAAnimation()
+     var attack1Animation = CAAnimation()
+     var deadAnimation = CAAnimation()
     
     //movement
-    private var previousUpdateTime = TimeInterval(0.0)
-    private var isWalking:Bool = false
+     var previousUpdateTime = TimeInterval(0.0)
+     var isWalking:Bool = false
 
     
     
