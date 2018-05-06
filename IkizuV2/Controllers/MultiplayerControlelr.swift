@@ -12,8 +12,10 @@ import GoogleSignIn
 
 class MultiplayerControlelr: UIViewController {
     
-    var user = Auth.auth()
-    var listOfUsers : [Auth] = []
+//    var user = Auth.auth()
+    var listOfUsers : [PlayerClass] = []
+
+
     
     
     var database = Database.database().reference()
@@ -34,9 +36,32 @@ class MultiplayerControlelr: UIViewController {
     
     @IBAction func joinBtnPressed(_ sender: Any) {
         
-        listOfUsers.append(user)
-        database.child(searchField!.text!).setValue(listOfUsers)
-
+        
+        var user = PlayerClass()
+        user.name = Auth.auth().currentUser!.displayName!
+        user.Uid = Auth.auth().currentUser!.uid
+        
+        
+        let myDatabase = Database.database().reference()
+        myDatabase.child(searchField.text!).childByAutoId().setValue(user.Uid)
+        
+        myDatabase.child(searchField.text!).observe(.childAdded) { (snapshot) in
+            print(" rätt spår bror\(snapshot.key)")
+           
+            
+        }
+        
+//       // myDatabase.setValue(user.currentUser!.uid)
+//
+//        let usersRef = myDatabase.child("users").child(searchField!.text!)
+//        let thisUserRef = usersRef.child(user.currentUser!.uid)
+//        var thisUserPostRef = thisUserRef.childByAutoId //create a new post node
+//
+//      //  listOfUsers.append(Auth.auth().currentUser!)
+        
+        
+        
+      //  thisUserPostRef().child(user.currentUser!.uid).setValue(listOfUsers)
         
         
         

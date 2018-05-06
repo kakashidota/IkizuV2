@@ -21,26 +21,31 @@ class GameViewController: UIViewController {
     var mainScene:SCNScene!
     var currentBallNode: SCNNode?
     
-
+    
 
     //general
     var gameState:GameState = .loading
     
     //nodes
-     var player:Player?
-     var cameraStick:SCNNode!
-     var cameraXHolder:SCNNode!
-     var cameraYHolder:SCNNode!
+    var player:Player?
+    var cameraStick:SCNNode!
+    var cameraXHolder:SCNNode!
+    var cameraYHolder:SCNNode!
     //player2Nodes
     var bro:Player?
     var playerList:[Player?] = []
-    var broPos = PlayerClass()
-    var listOfPlayers : [PlayerClass] = []
+    var user = PlayerClass()
+    var playersInLobby : [PlayerClass] = []
+    
+    //Firebasetest
+    var otherPlayerClass = PlayerClass()
+    let otherplayer = Player()
+
     
     //movement
-     var controllerStoredDirection = float2(0.0)
-     var padTouch:UITouch?
-     var cameraTouch:UITouch?
+    var controllerStoredDirection = float2(0.0)
+    var padTouch:UITouch?
+    var cameraTouch:UITouch?
     
     //Firebase
     var myDatabase : DatabaseReference?
@@ -48,10 +53,14 @@ class GameViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         myDatabase = Database.database().reference()
-        myDatabase?.child("yo").setValue("hej")
+        
+        
+        
+        
         setupScene()
         setupPlayer()
-        setupBro()
+        loadPlayers()
+     //   setupBro()
         setupCamera()
         gameState = .playing
         
@@ -107,33 +116,73 @@ class GameViewController: UIViewController {
         cameraYHolder.rotation = SCNVector4Make(1, 0, 0, yRotationValue)
     }
     
-    //MARK:- PLAYER
-     func setupPlayer(){
+    func loadPlayers() {
         
+    }
+    
+    //MARK:- PLAYER
+    func setupPlayer(){
+        
+        myDatabase?.child("gameSession").observe(.childChanged, with: { (snapshot) in
+            print("detta innehåller tadaaaa : \(snapshot)")
+            
+            
+            
+            self.otherplayer.scale = SCNVector3Make(0.0046, 0.0046, 0.0046)
+            self.otherplayer.position = SCNVector3Make(0.0, 0.0, 0.0)
+            self.otherplayer.rotation = SCNVector4Make(0, 1, 0, Float.pi)
+            self.otherplayer.position = SCNVector3(x: 100, y: 0, z: 120)
+            self.mainScene.rootNode.addChildNode(self.self.otherplayer)
+            
+            print("SnapShot value: \(self.otherPlayerClass.name) ")
+            print("Snapshot Key: \(snapshot.childSnapshot(forPath: "Uid"))")
+            print("SnapShot name: \(snapshot.hasChildren())")
+            
+            var test = snapshot.childSnapshot(forPath: "Uid").value as! String
+            
+            if Auth.auth().currentUser!.uid != test {
+                self.otherPlayerClass.positionX = snapshot.childSnapshot(forPath: "PosX").value as! Float
+                self.otherPlayerClass.positionZ = snapshot.childSnapshot(forPath: "PosZ").value as! Float
+                self.otherplayer.position.x = self.otherPlayerClass.positionX 
+                self.otherplayer.position.z = self.otherPlayerClass.positionZ
+                
+            }
+            
+            print("nu kanske \(test)")
+        })
+        
+        
+  
         player = Player()
         player!.scale = SCNVector3Make(0.0046, 0.0046, 0.0046)
         player!.position = SCNVector3Make(0.0, 0.0, 0.0)
         player!.rotation = SCNVector4Make(0, 1, 0, Float.pi)
-        
+        player!.position = SCNVector3(x: 100, y: 0, z: 120)
         mainScene.rootNode.addChildNode(player!)
+        
+        let user = PlayerClass()
+        user.name = Auth.auth().currentUser!.displayName!
+        user.Uid = Auth.auth().currentUser!.uid
+        user.saveToFirebase()
+        
         
     }
     
     //MARK:- BRO
-    func setupBro(){
-        bro = Player()
-        bro!.scale = SCNVector3Make(0.0046, 0.0046, 0.0046)
-        bro!.position = SCNVector3Make(5, 0, 5)
-        bro!.rotation = SCNVector4Make(0, 1, 0, Float.pi)
-        myDatabase = Database.database().reference()
-        playerList.append(bro!)
-        
-        
-       // myDatabase?.child("Player1").setValue(playerList)
-        
-        mainScene.rootNode.addChildNode(bro!)
-    }
-    
+//    func setupBro(){
+//        bro = Player()
+//        bro!.scale = SCNVector3Make(0.0046, 0.0046, 0.0046)
+//        bro!.position = SCNVector3Make(5, 0, 5)
+//        bro!.rotation = SCNVector4Make(0, 1, 0, Float.pi)
+//        myDatabase = Database.database().reference()
+//        playerList.append(bro!)
+//
+//
+//       // myDatabase?.child("Player1").setValue(playerList)
+//
+//        mainScene.rootNode.addChildNode(bro!)
+//    }
+//
 
     //MARK:- TOUCHES + MOVEMENT
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -174,13 +223,17 @@ class GameViewController: UIViewController {
             
             
             controllerStoredDirection = vClamp
-            listOfPlayers.append(broPos)
-            broPos.positionX = player!.position.x
-            broPos.positionY = player!.position.y
-            broPos.positionZ = player!.position.z
-
             
-            broPos.saveToFirebase()
+            user.positionX = player!.position.x
+            user.positionY = player!.position.y
+            user.positionZ = player!.position.z
+            user.name = Auth.auth().currentUser!.displayName!
+            user.Uid = Auth.auth().currentUser!.uid
+            
+            user.saveToFirebase()
+            
+            
+    
         
         } else if let touch = cameraTouch {
             
@@ -192,7 +245,7 @@ class GameViewController: UIViewController {
     
     func handleBroMovment(){
         
-        myDatabase?.child("bror").observe(.childChanged, with: { (snapshot) in
+        myDatabase?.child("Player1").observe(.childChanged, with: { (snapshot) in
             print(snapshot)
         })
         
@@ -240,6 +293,12 @@ class GameViewController: UIViewController {
     
     func updateFollowers(){
         cameraStick.position = SCNVector3Make(player!.position.x, 0.0, player!.position.z)
+//        myDatabase?.child(otherPlayerClass.Uid).observe(.childChanged, with: { (snapshot) in
+//            print("ok some progress")
+//        })
+//
+        
+        
     }
     
     
@@ -307,9 +366,12 @@ extension GameViewController:SCNSceneRendererDelegate{
         player?.walkInDirection(direction, time: time, scene: scene)
         
         updateFollowers()
+        
+    
+        }
     }
 
-}
+
 
 
 

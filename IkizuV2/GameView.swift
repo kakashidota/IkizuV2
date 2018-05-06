@@ -43,6 +43,8 @@ class GameView : SCNView {
         let w = bounds.size.width
         let h = bounds.size.height
         
+        
+        
         skScene = SKScene(size: CGSize(width: w, height: h))
         skScene.scaleMode = .resizeFill
         

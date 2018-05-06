@@ -12,6 +12,10 @@ import GoogleSignIn
 
 class WelcomePage: UIViewController, GIDSignInUIDelegate {
     
+    
+    var user = PlayerClass()
+    var listOfUsers : [PlayerClass] = []
+    
 
     @IBOutlet weak var signInBtn: GIDSignInButton!
     

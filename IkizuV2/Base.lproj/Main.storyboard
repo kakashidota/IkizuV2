@@ -52,6 +52,21 @@
             </objects>
             <point key="canvasLocation" x="-1256" y="92"/>
         </scene>
+        <!--View Controller-->
+        <scene sceneID="MEM-cU-CSu">
+            <objects>
+                <viewController id="UoJ-vr-eJi" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="EJm-9d-LnX">
+                        <rect key="frame" x="0.0" y="0.0" width="667" height="375"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" red="0.81926003889999999" green="0.47538593300613824" blue="0.16159573128741822" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <viewLayoutGuide key="safeArea" id="NWK-qm-ZxJ"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="9Hx-Gv-Mtk" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-618" y="-1151"/>
+        </scene>
         <!--Multiplayer Controlelr-->
         <scene sceneID="0TH-AY-IEo">
             <objects>
@@ -73,6 +88,15 @@
                                 <state key="normal" title="Button"/>
                                 <connections>
                                     <action selector="joinBtnPressed:" destination="Nhq-Nw-Ieg" eventType="touchUpInside" id="zj3-EB-x6O"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yJ5-ac-kEt">
+                                <rect key="frame" x="283" y="201" width="100" height="100"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" red="1" green="0.43021238807263862" blue="0.84343235100692948" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <state key="normal" title="Go to game"/>
+                                <connections>
+                                    <segue destination="BV1-FR-VrT" kind="show" id="fiv-WT-mIG"/>
                                 </connections>
                             </button>
                         </subviews>
